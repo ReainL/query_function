@@ -1,0 +1,123 @@
+ <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>快递信息查询</title>
+        <style type="text/css">
+            *{margin: 0;padding: 0;}
+            #container{width: 800px;margin: 15px auto;font-size: 20px;font-weight: bolder;}
+            select[id="company"]{width: 200px;height: 30px;font-size: 18px;font-family: "微软雅黑";border-radius: 5px;}
+            #wb{float: left;}
+            input[id="postid"]{margin:10px auto;width: 200px;height: 20px;font-size: 14px;font-family: "微软雅黑";border-radius: 3px;}
+            button[id="cx"]{display: block;width: 56px;height: 26px;background-color:#388bff;color:white;margin: 8px 380px;}
+            ul[id="show"]{list-style: none;width: 500px;height:500px;border:solid 2px #888; border-radius: 8px; }
+            #container ul li p{padding:15px;width:480px;
+                min-height: 50px;font-size:14px;}
+        </style>
+        <script
+              src="https://code.jquery.com/jquery-1.12.4.js"
+              integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+              crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div>
+                <label for="company">快递公司名称</label>
+                <select id="company" name="address">
+                        <option value="shunfeng">顺丰速运</option>
+                        <option value="shentong">申通快递</option>
+                        <option value="ems">EMS</option>
+                        <option value="yuantong">圆通速递</option>
+                        <option value="zhongtong">中通快递</option>
+                        <option value="tiantian">天天快递</option>
+                        <option value="huitongkuaidi">汇通快递</option>
+                        <option value="yunda">韵达速递</option>
+                        <option value="quanfengkuaidi">全峰快递</option>
+                        <option value="debangwuliu">德邦</option>
+                        <option value="zhaijisong">宅急送</option>
+                </select>
+            </div>
+            <div id="wb">
+                <label for="post">输入快递单号</label>
+                <input type="text" id="postid">
+            </div>
+            <div>
+                <button id="cx">查询</button>
+            </div>
+
+            <ul id="show">
+                <li>
+                    <i></i>
+                    <p>物流信息</p>
+                </li>
+            </ul>
+            <div style="clear:both;"></div>
+        </div>
+
+        <script>
+            // 获取标签对象：快递公司
+            var $selector=$("#company");
+            // 获取快递单号
+            var $postid=$("#postid");
+            // 查询
+            var $cx=$("#cx");
+
+            // 给查询按钮添加点击事件
+            $cx.click(function(){
+                // 获取需要的数据
+                var $company = $selector.val();
+                var $value = $postid.val();
+
+                // ajax 获取数据
+                $.ajax({
+                    url:"https://sp0.baidu.com/9_Q4sjW91Qh3otqbppnN2DJv/pae/channel/data/asyncqury?cb=?",
+                    type:"get",
+                    data:{com:$company,nu:$value,appid:4001},
+                    dataType:"json",
+                    success:function(msg){
+                        // 清空历史消息
+                        $("#show").empty();
+
+                        // 获取接口返回的数据
+                        console.log(msg);
+                        var $info = msg.data.info.context;
+
+                        // 循环遍历数据
+                        for(var i = 0; i <$info.length;i++){
+                            // 获取每一笔的时间信息
+                            var $time = $info[i].time;
+                            $time = getTimeStr($time);
+
+                            // 获取每一笔的快递信息
+                            var $desc = $info[i].desc;
+
+                            // 创建标签，添加到页面中
+                            var $msg = $("<p>").text($time + ":" + $desc);
+                            var $i = $("<i>");
+
+                            var $kd = $("<li>");
+                            $kd.append($i).append($msg);
+                            // 添加到页面中
+                            $("#show").append($kd);
+                        }
+
+
+                    },
+                    error:function(){
+                        console.log("系统繁忙，查询失败");
+                    }
+                });
+            });
+
+            // 获取时间字符串
+            function getTimeStr(dt){
+                var _date = new Date(parseInt(dt*1000));
+                return _date.getFullYear() + "-" + (_date.getMonth() + 1) + "-" + _date.getDate() + " " + _date.getHours() + ":" + _date.getMinutes() + ":" + _date.getSeconds();
+
+
+            }
+        </script>
+
+
+    </body>
+    </html>

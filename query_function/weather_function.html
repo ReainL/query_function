@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>天气预报</title>
+    <style>
+        *{margin:0px;padding:0px;}
+        #container{width:800px;margin:auto;font-size: 20px;font-weight: bolder;}
+        input[id="city"]{width:500px;height:35px;border:solid 2px #cecece;font-size:22px;line-height:35px;color:#888;padding-left:10px; margin:10px;}
+        #show{display:block;width: 600px;height: 300px;border: solid 2px #888;margin: 10px auto; list-style: none;padding: 10px;border-radius: 8px;box-shadow: 10px 10px 5px #888}
+
+    </style>
+    <script
+      src="https://code.jquery.com/jquery-1.12.4.js"
+      integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+      crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="container">
+        <div>
+            请输入城市名称：
+            <input type="text" id="city" placeholder="请输入想查询的地区">
+        </div>
+        <ul id="show">
+            <li>天气信息</li>
+        </ul>
+
+    </div>
+
+ <script>
+        // 获取需要的标签对象
+        var _city = $("#city");
+        var _show = $("#show");
+
+        // 添加事件处理
+        _city.blur(function(){
+            // 获取输入框中的输入数据
+            var $value = _city.val();
+
+            _show.empty();
+            // 调用函数，获取数据
+            $.ajax({
+                url:"http://wthrcdn.etouch.cn/weather_mini?callback=?",
+                type:"get",
+                data:{city:$value},
+                dataType:"jsonp",
+                success:function(msg){
+                    // 当url接口访问成功的时候，自动调用success对应的函数，接口返回的数据会自动存放在函数的参数data中
+                    console.log(msg);
+                    // 获取城市数据，展示到页面中
+                    var $city = $("<li>");
+                    $city.text(msg.data.city + "天气预报信息：");
+
+                    // 获取今天温度数据
+                    var $wd = $("<li>");
+                    $wd.text("今天温度："+ msg.data.wendu);
+
+                    // 获取今天感冒指数数据
+                    var $gm = $("<li>");
+                    $gm.text("温馨提示："+ msg.data.ganmao);
+
+                    // 今天天气预报
+                    var $today = $("<li>");
+
+                    var $date = $("<span>").text("日期：" + msg.data.forecast[0].date)
+                    var $type = $("<span>").text("；今天天气:" + msg.data.forecast[0].type)
+                    var $high = $("<span>").text("；最高气温:" + msg.data.forecast[0].high)
+                    var $low = $("<span>").text("；最低气温:" + msg.data.forecast[0].low)
+                    var $fl = $("<span>").text("；风力:" + msg.data.forecast[0].fengli)
+                    var $fx = $("<span>").text("；风向:" + msg.data.forecast[0].fengxiang)
+
+                    $today.append($date).append($type).append($high).append($low).append($fl).append($fx);
+
+                    _show.append($city).append($wd).append($gm).append($today);
+                },
+                error:function(){
+                    console.log("运行错误...");
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

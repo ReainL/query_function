@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>查询访问</title>
+
+    <!--
+
+    https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=
+    https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=abc&cb=jQuery110206545585568528622_1499224165848&_=1499224165856
+     -->
+
+    <style type="text/css">
+        *{margin:0px;padding: 0px;}
+        #container{width:800px;margin:auto;margin-top:10px;}
+        input[id="keywords"]{width: 500px;height: 40px;border:solid 2px #cecece;font-size: 22px;line-height: 40px;color:#888;padding-left: 10px;}
+
+        #sug{width:512px;list-style: none;border:solid 1px #ccc;}
+        #sug li{height: 30px;background:#fcfcfc;line-height:30px;font-size:18px}
+
+    </style>
+    <script
+      src="https://code.jquery.com/jquery-1.12.4.js"
+      integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+      crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <div id="container">
+        <div>
+            <input type="text" id="keywords" placeholder="请输入关键词">
+        </div>
+        <ul id="sug">
+            <!-- <li>建议搜索的关键词</li> -->
+        </ul>
+    </div>
+
+    <script>
+        // 获取输入框
+        var $kw = $("#keywords");
+
+        // 添加键盘按键抬起事件
+        $kw.keyup(function(){
+            // 获取输入框中的输入
+            var $value = $kw.val();
+
+            // 调用函数，获取数据
+            $.ajax({
+                url:"https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?cb=?",
+                type:"get",
+                data:{wd:$value},
+                dataType:"jsonp",
+                success:function(msg){
+                    // 当url接口访问成功的时候，自动调用success对应的函数，接口返回的数据会自动存放在函数的参数data中
+                    console.log(msg.s);
+                    // 将输入输出到页面中;dom操作
+                    var _sug = msg.s;
+                    // 清空原来的url标签;
+                    $("#sug").empty();
+
+                    for (var i = 0;i< _sug.length;i++){
+                        // 创建一个li标签
+                        var $li = $("<li>")
+                        // 标签中添加文本数据
+                        $li.text(_sug[i]);
+                        // 将li标签，添加到页面中
+                        $("#sug").append($li);
+
+
+                    }
+                }
+            });
+        });
+
+    </script>
+
+</body>
+</html>
+
+
+<!--    dataType:"jsonp",
+        同源策略：web规范了只有相同源头（域名）的数据才可以互相访问
+        同源策略是为了数据的安全性，而设置的一种网络数据访问限制
+
+        跨域：从不同的域名下访问指定的数据 -->
